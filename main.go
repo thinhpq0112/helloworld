@@ -1,14 +1,25 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
+	"fmt"
+	"net/http"
+	"os"
+	"strconv"
 )
 
 func main() {
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, "Hello, you've requested: %s\n", r.URL.Path)
-    })
+	port := 8888
+	if os.Getenv("PORT") != "" {
+		p, err := strconv.Atoi(os.Getenv("PORT"))
+		if err == nil {
+			port = p
+		}
+	}
 
-    http.ListenAndServe(":8888", nil)
+	fmt.Println(fmt.Sprintf("Starting server on port %d...", port))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hello, you've requested: %s\n", r.URL.Path)
+	})
+
+	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
